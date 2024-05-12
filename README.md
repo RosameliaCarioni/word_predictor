@@ -35,14 +35,14 @@ The project uses various datasets to train the models. Below are the details of 
 | **Twitter**        | Tweets data              | 583.1 MB | [Rpubs - Twitter Data](https://rpubs.com/NAyako/1036093)             |
 
 ### Preprocessing 
-All datasets were pre-processed to clean and standardize the text data. The preprocessing scripts are available in the `data_processing/` directory, and the cleaned datasets are stored in `data/clean_data/`.
+All datasets were pre-processed to clean and standardize the text data. The preprocessing scripts are available in the `data_processing/` directory, and the cleaned datasets can be [downloaded here](https://drive.google.com/file/d/13o4l--P29W-vunAA241gp_zDWu0SOxJF/view?usp=sharing). You should unzip them and store them in the main directory in the path `data/clean_data/`.
 
 ## Run the word predictor 
 
 1. **Clone the repository:**
     ````
    git clone https://github.com/RosameliaCarioni/word_predictor.git
-   cd WORD_PREDICTOR
+   cd word_predictor
     ````
 
 2. **Create an activate a conda environment:**
