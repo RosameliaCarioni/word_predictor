@@ -37,6 +37,24 @@ The project uses various datasets to train the models. Below are the details of 
 ### Preprocessing 
 All datasets were pre-processed to clean and standardize the text data. The preprocessing scripts are available in the `data_processing/` directory, and the cleaned datasets can be [downloaded here](https://drive.google.com/file/d/13o4l--P29W-vunAA241gp_zDWu0SOxJF/view?usp=sharing). You should unzip them and store them in the main directory in the path `data/clean_data/`.
 
+## File Structure 
+The project directory is organized as follows:  
+- **`data_processing/`**: Includes Jupyter notebooks used to clean and preprocess the datasets.
+- 
+- **`images/`**: Contains images of the contributors, used for the web app.
+
+- **`models/`**: Contains model training scripts and pre-trained weights.
+  - **`training/`**: Directory with scripts for training the models and storing their weights.
+  - **`n_gram.py`**: N-gram model handler.
+  - **`rnn.py`**: RNN model handler.
+  - **`transformer.py`**: Transformer model handler.
+
+## Files Structure 
+There are 3 main folders in the directory `data_processing/`, `images/`, and `models/`.
+- `data_processing/` includes the jupyter notebooks used to clean the different datasets.
+- `images/` contains the pictures of the contributors of this repo. They are used for the web app.
+- `models/` contains the training of the 3 different models, as well as their weights, used when predicting a word. 
+
 ## Run the word predictor 
 
 1. **Clone the repository:**
