@@ -49,12 +49,6 @@ The project directory is organized as follows:
   - **`rnn.py`**: RNN model handler.
   - **`transformer.py`**: Transformer model handler.
 
-## Files Structure 
-There are 3 main folders in the directory `data_processing/`, `images/`, and `models/`.
-- `data_processing/` includes the jupyter notebooks used to clean the different datasets.
-- `images/` contains the pictures of the contributors of this repo. They are used for the web app.
-- `models/` contains the training of the 3 different models, as well as their weights, used when predicting a word. 
-
 ## Run the word predictor 
 
 1. **Clone the repository:**
