@@ -56,5 +56,5 @@ All datasets were pre-processed to clean and standardize the text data. The prep
     ````
 4. **Run the program:**
     ````
-    python main.py
+    streamlit run main.py
     ````
