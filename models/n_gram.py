@@ -1,14 +1,14 @@
-import math 
+import math
 
 class NGram:
     def __init__(self):
        self.word_to_id = {}
-       self.id_to_word = {} 
+       self.id_to_word = {}
        self.total_words = 0
        self.unique_words = 0
-       
+
        # Occurances count - [word][ids of words]
-       self.unigram_count = {} 
+       self.unigram_count = {}
        self.fourgram_count = {}
        self.trigram_count = {}
        self.bigram_count = {}
@@ -19,7 +19,7 @@ class NGram:
        self.trigram_prob = {}
        self.bigram_prob = {}
 
-       # Linear interpolation -> TODO: find values 
+       # Linear interpolation -> TODO: find values
        self.lambda_1 = 0.4
        self.lambda_2 = 0.3
        self.lambda_3 = 0.2
@@ -62,6 +62,5 @@ class NGram:
         except Exception as e:
             print(f"An error occurred while writing to the file: {e}")
 
-    def predict_next_word(self, words):
-        
-        return [f"{words}_{i}" for i in range(10)]
+    def predict_next_word(self, words, number_of_suggestions):
+        return [f"{words}_{i}" for i in range(number_of_suggestions)]
