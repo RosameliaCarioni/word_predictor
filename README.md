@@ -40,9 +40,7 @@ All datasets were pre-processed to clean and standardize the text data. The prep
 ## File Structure 
 The project directory is organized as follows:  
 - **`data_processing/`**: Includes Jupyter notebooks used to clean and preprocess the datasets.
-- 
 - **`images/`**: Contains images of the contributors, used for the web app.
-
 - **`models/`**: Contains model training scripts and pre-trained weights.
   - **`training/`**: Directory with scripts for training the models and storing their weights.
   - **`n_gram.py`**: N-gram model handler.
