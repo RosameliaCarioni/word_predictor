@@ -14,7 +14,7 @@ st.set_page_config(layout="centered", page_icon=':iphone:', page_title="Word Aut
 def init_models():
     global n_gram_model, rnn_model, transformer_model
     n_gram_model = n_gram.NGram()
-    rnn_model = rnn.RNN() # maybe call main function that returns a RNN() class model rnn.initialize_rnn()
+    rnn_model = rnn.initialize_rnn() #RNN() # maybe call main function that returns a RNN() class model rnn.initialize_rnn()
     transformer_model = transformer.Transformer()
 
 
