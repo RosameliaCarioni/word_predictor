@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from typing import List
 from models import rnn, n_gram, transformer
+from models.training.rnn import run, RNN
 
 import streamlit as st
 from streamlit_searchbox import st_searchbox
@@ -108,7 +109,7 @@ def main():
         selected_value = st_searchbox(search_function=lambda term: search_rnn(term, st.session_state['num_suggestions_rnn']),
                                       placeholder='',
                                       key='rnn',
-                                      edit_after_submit="option",
+                                      edit_after_submit="concat",
                                       label='RNN Suggestions')
 
     with transformer_page:
