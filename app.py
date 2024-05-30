@@ -29,7 +29,7 @@ class WordPredictorApp:
 
     def update_predictions(self, event):
         current_text = self.text_var.get()
-        predictions = self.model.predict_next_word(current_text, self.max_predictions)
+        predictions = self.model.predict_next_word_tkinter(current_text, self.max_predictions)
         for i in range(self.max_predictions):
             if i < len(predictions):
                 self.prediction_buttons[i].config(text=predictions[i], state="normal")
