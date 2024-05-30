@@ -149,7 +149,8 @@ class RNNpredictor:
             # Decode the generated subwords to form the next word
             print(generated_subwords)
             next_word = self.tokenizer.decode(generated_subwords, clean_up_tokenization_spaces=True).strip()
-            next_words.append((next_word, str(input_text) + str(next_word)))
+            #next_words.append((next_word, str(input_text) + str(next_word)))
+            next_words.append(next_word)
 
         return next_words
     

@@ -45,8 +45,8 @@ def main():
     if 'num_suggestions_transformer' not in st.session_state:
         st.session_state['num_suggestions_transformer'] = 5
 
-    information, n_gram_page, rnn_page, transformer_page = st.tabs(
-        ["Information", "N-Gram", "RNN-GRU", "Transformer"]
+    information, n_gram_page, rnn_page, transformer_page, rnn_test_page = st.tabs(
+        ["Information", "N-Gram", "RNN-GRU", "Transformer", "RNN-TEST"]
     )
 
     with information:
@@ -106,11 +106,12 @@ def main():
         st.write('Selected amount:', num_suggestions_rnn)
 
         # Use the updated session state value for search
-        selected_value = st_searchbox(search_function=lambda term: search_rnn(term, st.session_state['num_suggestions_rnn']),
+        selected_value = st_searchbox(search_function=lambda term: search_rnn(' '.join(st.session_state.current_text.split()[:-1]) + term, st.session_state['num_suggestions_rnn']),
                                       placeholder='',
                                       key='rnn',
-                                      edit_after_submit="concat",
+                                      edit_after_submit="option",
                                       label='RNN Suggestions')
+        
 
     with transformer_page:
         # Define the slider and update the session state
@@ -125,6 +126,115 @@ def main():
                                       key='transformer',
                                       edit_after_submit="option",
                                       label='Transformer Suggestions')
+        
+    # with rnn_test_page:
+    #     # Initialize session state variables
+    #     if 'current_text' not in st.session_state:
+    #         st.session_state.current_text = ""
+    #     if 'letters_saved' not in st.session_state:
+    #         st.session_state.letters_saved = 0
+    #     if 'predictions' not in st.session_state:
+    #         st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
+
+    #     # Define the slider and update the session state
+    #     num_suggestions_rnn_test = st.slider('Choose number of RNN suggestions', min_value=1, max_value=10,
+    #                                     value=st.session_state['num_suggestions_rnn'], key='rnn_test_slider')
+    #     st.session_state['num_suggestions_rnn_test'] = num_suggestions_rnn_test
+        
+    #     def update_text(prediction):
+    #         current_text = st.session_state.current_text
+    #         words = current_text.split()
+    #         if words:
+    #             words[-1] = prediction
+    #         else:
+    #             words.append(prediction)
+    #         new_text = ' '.join(words)
+    #         st.session_state.letters_saved += len(prediction) - len(words[-1])  # calculate letters saved
+    #         st.session_state.current_text = new_text
+    #         #update_buttons()
+
+    #     def update_buttons():
+    #         st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn_test'])
+    #         for i, prediction in enumerate(st.session_state.predictions):
+    #             if st.button(str(prediction), key=i):  # Ensure prediction is a string
+    #                 update_text(str(prediction))
+
+    #     # Title
+    #     st.title("Word Predictor")
+
+    #     # Text input with on_change callback
+    #     st.text_area("Type here:", key='text_input', on_change=update_buttons)
+
+        
+    #     # Display predictions
+    #     st.write("Predictions:")
+    #     update_buttons()
+    #     #for i, prediction in enumerate(st.session_state.predictions):
+    #     #    if st.button(str(prediction), key=i):  # Ensure prediction is a string
+    #     #        update_text(str(prediction))
+
+    #     #####
+    #     # def update_text(new_text):
+    #     #     st.session_state.current_text = new_text
+    #     #     st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
+
+    #     # def select_prediction(prediction):
+    #     #     words = st.session_state.current_text.split()
+    #     #     last_word = words[-1] if words else ''
+    #     #     st.session_state.letters_saved += len(prediction) - len(last_word)
+    #     #     words[-1] = prediction
+    #     #     st.session_state.current_text = ' '.join(words)
+    #     #     st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
+
+    #     # # Title
+    #     # st.title("Word Predictor")
+
+    #     # # Text input with on_change callback
+    #     # new_text = st.text_input("Type here:", value=st.session_state.current_text, key='text_input')
+    #     # if new_text != st.session_state.current_text:
+    #     #     update_text(new_text)
+
+    #     # # Slider for number of predictions
+    #     # num_predictions = st.slider("Number of predictions:", 1, 10, 3, key='num_predictions')
+    #     # if num_predictions != st.session_state.num_predictions:
+    #     #     st.session_state.num_predictions = num_predictions
+    #     #     st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
+
+    #     # # Display predictions
+    #     # st.write("Predictions:")
+    #     # for i, prediction in enumerate(st.session_state.predictions):
+    #     #     if st.button(str(prediction), key=i):  # Ensure prediction is a string
+    #     #         select_prediction(str(prediction))
+
+    #     # def update_predictions():
+    #     #     st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
+
+    #     ####
+    #     # def update_text(prediction):
+    #     #     current_text = st.session_state.current_text
+    #     #     words = current_text.split()
+    #     #     if words:
+    #     #         words[-1] = prediction
+    #     #     else:
+    #     #         words.append(prediction)
+    #     #     new_text = ' '.join(words)
+    #     #     st.session_state.letters_saved += len(prediction) - len(words[-1])  # calculate letters saved
+    #     #     st.session_state.current_text = new_text
+    #     #     update_predictions()
+
+
+    #     # st.title("Word Predictor")
+
+    #     # st.text_input("Type here:", key='current_text', on_change=update_predictions)
+
+    #     # st.write("Predictions:")
+    #     # for i, prediction in enumerate(st.session_state.predictions):
+    #     #     if st.button(str(prediction), key=i):
+    #     #         update_text(str(prediction))
+
+    #     st.write(f"Current text: {st.session_state.current_text}")
+    #     st.write(f"Letters saved: {st.session_state.letters_saved}")
+
 
 
 if __name__ == '__main__':
