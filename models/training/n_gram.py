@@ -1,5 +1,6 @@
 import math
 import time
+from tqdm import tqdm
 
 
 class NGram:
@@ -11,24 +12,23 @@ class NGram:
 
         # Occurrences count - [word][ids of words]
         self.unigram_count = {}
-        self.fourgram_count = {}
         self.trigram_count = {}
         self.bigram_count = {}
 
         # Probabilities  - [word][ids of words]
         self.unigram_prob = {}
-        self.fourgram_prob = {}
         self.trigram_prob = {}
         self.bigram_prob = {}
 
-        self.N = 4
+        self.N = 3
 
-    def process_file(self, file_path):
-        with open(file_path, 'r', encoding='utf-8') as file:
-            for line in file:
-                # self.count_unigrams(line)
-                self.count_n_grams(line)
-        self.probability_unigram()
+    def process_files(self, files):
+        for file_path in files:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                total_lines = sum(1 for line in file)  # Count the total lines first
+                file.seek(0)  # Reset file pointer to the beginning
+                for line in tqdm(file, total=total_lines, desc=f"Processing lines in {file_path}"):
+                    self.count_n_grams(line)
         self.probability_n_gram()
 
     def count_unigrams(self, line):
@@ -65,8 +65,8 @@ class NGram:
             self.total_words += 1
 
             # BIGRAM
-            previous_words = self.get_previous_words(words, i, self.N - 3)
-            if len(previous_words) == self.N - 3:
+            previous_words = self.get_previous_words(words, i, self.N - 2)
+            if len(previous_words) == self.N - 2:
                 previous_word = previous_words[0]  # only one preceding word
                 if word in self.bigram_count:
                     if previous_word in self.bigram_count[word]:
@@ -78,8 +78,8 @@ class NGram:
                     self.bigram_count[word][previous_word] = 1
 
             # TRIGRAM
-            previous_words = self.get_previous_words(words, i, self.N - 2)
-            if len(previous_words) == self.N - 2:
+            previous_words = self.get_previous_words(words, i, self.N - 1)
+            if len(previous_words) == self.N - 1:
                 if word in self.trigram_count:
                     if previous_words in self.trigram_count[word]:
                         self.trigram_count[word][previous_words] += 1
@@ -88,18 +88,6 @@ class NGram:
                 else:
                     self.trigram_count[word] = {}
                     self.trigram_count[word][previous_words] = 1
-
-            # FOUR-GRAM 
-            previous_words = self.get_previous_words(words, i, self.N - 1)
-            if len(previous_words) == self.N - 1:
-                if word in self.fourgram_count:
-                    if previous_words in self.fourgram_count[word]:
-                        self.fourgram_count[word][previous_words] += 1
-                    else:
-                        self.fourgram_count[word][previous_words] = 1
-                else:
-                    self.fourgram_count[word] = {}
-                    self.fourgram_count[word][previous_words] = 1
 
     def probability_unigram(self):
         for word in self.unigram_count.keys():
@@ -121,13 +109,6 @@ class NGram:
                 self.trigram_prob[word][prev_word] = math.log(self.trigram_count[word][prev_word] /
                                                               self.bigram_count[self.id_to_word[prev_word[1]]][prev_word[0]])
 
-        for word in self.fourgram_count.keys():
-            prev_words = self.fourgram_count[word]
-            self.fourgram_prob[word] = {}
-            for prev_word in prev_words:
-                self.fourgram_prob[word][prev_word] = math.log(self.fourgram_count[word][prev_word] /
-                                                               self.trigram_count[self.id_to_word[prev_word[-1]]][prev_word[:-1]])
-
     def save_model(self, file_path):
         """
         Creates a list of rows to print of the language model.
@@ -139,7 +120,7 @@ class NGram:
 
                 # write vocabulary
                 for i, word in self.id_to_word.items():
-                    file.write(f'{i} {word} {self.unigram_prob[word]} \n')
+                    file.write(f'{i} {word} {self.unigram_count[word]} \n')
                 print('Successfully wrote unigram prob')
 
                 # write bigram probabilities
@@ -154,25 +135,21 @@ class NGram:
                     file.write(f'{self.word_to_id[word]} {id_prev_word} {prob_value} \n')
                 print('Successfully wrote trigram prob')
 
-                # write fourgram probabilities
-                for word, prev_words in self.fourgram_prob.items():
-                    id_prev_word, prob_value = prev_words.popitem()
-                    file.write(f'{self.word_to_id[word]} {id_prev_word} {prob_value} \n')
-                print('Successfully wrote fourgram prob')
-
                 file.write(str(-1))  # end of file
         except Exception as e:
             print(f"An error occurred while writing to the file: {e}")
 
 
 def main():
-    four_gram = NGram()
-    # file_path = '/Users/rosameliacarioni/University/MSc/1_year/4_period/language engineering/word_predictor/data/clean_data/articles.txt'
-    file_path = '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/twitter/en_US.twitter.txt'
+    trigram = NGram()
+    files = ['/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/twitter.txt',
+             '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/articles.txt',
+             '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/mobile_text.txt',
+             '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/news_summarization.txt']
     start = time.time()
-    four_gram.process_file(file_path)
-    file_path = './testing.txt'
-    four_gram.save_model(file_path)
+    trigram.process_files(files)
+    model_path = '../weights/ngram_model.txt'
+    trigram.save_model(model_path)
     print(f"Training finished in {time.time() - start} seconds")
 
 
