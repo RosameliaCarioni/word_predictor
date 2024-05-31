@@ -86,6 +86,7 @@ private callbackSubmit(option: Option) {
     });
   } else {
     let input = "";
+    let charDifference = 0;
 
     switch (this.props.args.edit_after_submit) {
       case "current":
@@ -106,9 +107,12 @@ private callbackSubmit(option: Option) {
         if (lastSpaceIndex === -1) {
           // No space character found, use the entire input value
           input = option.label;
+          charDifference = Math.abs(this.state.inputValue.length - option.label.length);
         } else {
-          // Take the substring up to the last space and append the option label
+          // Take the substring from the last space and append the option label
+          const inputSubstring = this.state.inputValue.substring(lastSpaceIndex + 1);
           input = this.state.inputValue.substring(0, lastSpaceIndex) + " " + option.label;
+          charDifference = Math.abs(inputSubstring.length - option.label.length);
         }
         break;
     }
@@ -118,9 +122,9 @@ private callbackSubmit(option: Option) {
       option: option,
       inputValue: input,
     });
-  }
 
-  streamlitReturn("submit", option.value);
+    streamlitReturn("submit", { value: option.value, charDifference: charDifference });
+  }
 }
 
 

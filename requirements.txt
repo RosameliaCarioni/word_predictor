@@ -2,3 +2,4 @@ streamlit~=1.34.0
 requests~=2.31.0
 streamlit-searchbox~=0.1.10
 nltk~=3.8.1   
+tqdm~=4.65.0
