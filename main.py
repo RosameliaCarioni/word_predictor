@@ -14,22 +14,24 @@ st.set_page_config(layout="centered", page_icon=':iphone:', page_title="Word Aut
 
 
 def init_models():
-    global n_gram_model, rnn_model, transformer_model
-    n_gram_model = n_gram.NGram()
-    rnn_model = rnn.initialize_rnn() #RNN() # maybe call main function that returns a RNN() class model rnn.initialize_rnn()
-    transformer_model = transformer.Transformer()
+    if 'n_gram_model' not in st.session_state:
+        st.session_state.n_gram_model = n_gram.NGram()
+    if 'rnn_model' not in st.session_state:
+        st.session_state.rnn_model = rnn.RNN()
+    if 'transformer_model' not in st.session_state:
+        st.session_state.transformer_model = transformer.Transformer()
 
 
 def search_ngram(search_term: str, number_of_suggestions: int) -> List[str]:
-    return n_gram_model.predict_next_word(search_term, number_of_suggestions)
+    return st.session_state.n_gram_model.predict_next_word(search_term, number_of_suggestions)
 
 
 def search_rnn(search_term: str, number_of_suggestions: int) -> List[str]:
-    return rnn_model.predict_next_word(search_term, number_of_suggestions)
+    return st.session_state.rnn_model.predict_next_word(search_term, number_of_suggestions)
 
 
 def search_transformer(search_term: str, number_of_suggestions: int) -> List[str]:
-    return transformer_model.predict_next_word(search_term, number_of_suggestions)
+    return st.session_state.transformer_model.predict_next_word(search_term, number_of_suggestions)
 
 
 #################################
@@ -96,7 +98,7 @@ def main():
         selected_value = st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
                                       placeholder='',
                                       key='n_gram',
-                                      edit_after_submit="option",
+                                      edit_after_submit="concat",
                                       label='N-Gram Suggestions')
 
     with rnn_page:
@@ -110,7 +112,7 @@ def main():
         selected_value = st_searchbox(search_function=lambda term: search_rnn(term, st.session_state['num_suggestions_rnn']),
                                       placeholder='',
                                       key='rnn',
-                                      edit_after_submit="option",
+                                      edit_after_submit="concat",
                                       label='RNN Suggestions')
         #' '.join(st.session_state.current_text.split()[:-1]) + term
         
