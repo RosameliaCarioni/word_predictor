@@ -16,7 +16,7 @@ def init_models():
     if 'n_gram_model' not in st.session_state:
         st.session_state.n_gram_model = n_gram.NGram()
     if 'rnn_model' not in st.session_state:
-        st.session_state.rnn_model = rnn.RNN()
+        st.session_state.rnn_model = rnn.initialize_rnn()
     if 'transformer_model' not in st.session_state:
         st.session_state.transformer_model = transformer.Transformer()
 
@@ -50,6 +50,13 @@ def main():
     information, n_gram_page, rnn_page, transformer_page, rnn_test_page = st.tabs(
         ["Information", "N-Gram", "RNN-GRU", "Transformer", "RNN-TEST"]
     )
+
+    if 'letters_saved_ngram' not in st.session_state:
+        st.session_state.letters_saved_ngram = 0
+    if 'letters_saved_rnn' not in st.session_state:
+        st.session_state.letters_saved_rnn = 0
+    if 'letters_saved_transformer' not in st.session_state:
+        st.session_state.letters_saved_transformer = 0
 
     with information:
         st.title("Word Autocompletion")
@@ -94,11 +101,11 @@ def main():
         st.write('Selected amount:', num_suggestions_ngram)
 
         # Use the updated session state value for search
-        selected_value = st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
-                                      placeholder='',
-                                      key='n_gram',
-                                      edit_after_submit="autocomplete",
-                                      label='N-Gram Suggestions')
+        selected_value_n_gram =st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
+                                            placeholder='',
+                                            key='n_gram',
+                                            edit_after_submit="autocomplete",
+                                            label='N-Gram Suggestions')
 
     with rnn_page:
         # Define the slider and update the session state
@@ -108,12 +115,11 @@ def main():
         st.write('Selected amount:', num_suggestions_rnn)
 
         # Use the updated session state value for search
-        selected_value = st_searchbox(search_function=lambda term: search_rnn(term, st.session_state['num_suggestions_rnn']),
-                                      placeholder='',
-                                      key='rnn',
-                                      edit_after_submit="autocomplete",
-                                      label='RNN Suggestions')
-        #' '.join(st.session_state.current_text.split()[:-1]) + term
+        selected_value_rnn=st_searchbox(search_function=lambda term: search_rnn(term, st.session_state['num_suggestions_rnn']),
+                                        placeholder='',
+                                        key='rnn',
+                                        edit_after_submit="autocomplete",
+                                        label='RNN Suggestions')
         
 
     with transformer_page:
@@ -124,78 +130,11 @@ def main():
         st.write('Selected amount:', num_suggestions_transformer)
 
         # Use the updated session state value for search
-        selected_value = st_searchbox(search_function=lambda term: search_transformer(term, st.session_state['num_suggestions_transformer']),
-                                      placeholder='',
-                                      key='transformer',
-                                      edit_after_submit="autocomplete",
-                                      label='Transformer Suggestions')
-        
-    with rnn_test_page:
-        # Initialize session state variables
-        if 'current_text' not in st.session_state:
-            st.session_state.current_text = ""
-        if 'letters_saved' not in st.session_state:
-            st.session_state.letters_saved = 0
-        if 'predictions' not in st.session_state:
-            st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn'])
-        if "text_input" not in st.session_state:
-            st.session_state.text_input = ""
-
-        # Define the slider and update the session state
-        num_suggestions_rnn_test = st.slider('Choose number of RNN suggestions', min_value=1, max_value=10,
-                                        value=st.session_state['num_suggestions_rnn'], key='rnn_test_slider')
-        st.session_state['num_suggestions_rnn_test'] = num_suggestions_rnn_test
-        
-        def update_text(prediction):
-            current_text = st.session_state.current_text
-            words = current_text.split()
-            # calculate letters saved
-            # TODO: calculation is wrong because the words written with st.write() are the entire text
-            # could maybe try to use st.empty() and overwrite the words again and agai
-            st.session_state.letters_saved += len(prediction) - len(words[-1])  
-            if words:
-                words[-1] = prediction
-            else:
-                words.append(prediction)
-            new_text = ' '.join(words)
-            print(new_text)
-            print(len(prediction), len(words[-1]))
-            st.session_state.current_text = new_text
-
-        # Title
-        st.title("Word Predictor")
-
-        # Text input with on_change callback
-        # Using st_keyup (changed with every keystroke)
-        text_inp = st_keyup("Type here:", key='text_input')
-        # Alternative: using text_area or text_input; have to press (cmd + ) Enter to reload page
-        #text_inp = st.text_area("Type here:", value=st.session_state.current_text, key='text_input', on_change=update_predictions())
-        if text_inp:
-            st.session_state.current_text = text_inp
-            st.session_state.predictions = search_rnn(st.session_state.current_text, st.session_state['num_suggestions_rnn_test'])
-
-        # Display predictions
-        st.write("Predictions:")
-        col1, col2 = st.columns(2)
-        with col1:
-            for i, prediction in enumerate(st.session_state.predictions):
-                if st.button("Suggestion " + str(i) + " :", key=i):
-                    update_text(prediction)
-        
-        with col2:
-            for i, prediction in enumerate(st.session_state.predictions):
-                st.write(prediction)
-
-
-        st.write(f"Current text: {st.session_state.current_text}")
-        st.write(f"Letters saved: {st.session_state.letters_saved}")
-
-        # resets text (but only when pressing several times, first time is not sufficient because of how streamlit updates stuff)
-        if st.button("Reset Text", key="reset"):
-            st.session_state.current_text = ""
-            st.session_state.letters_saved = 0
-            #st.session_state.text_input = "" # I tried this but streamlit does not allow it
-
+        selected_value_transformer=st_searchbox(search_function=lambda term: search_transformer(term, st.session_state['num_suggestions_transformer']),
+                                                placeholder='',
+                                                key='transformer',
+                                                edit_after_submit="autocomplete",
+                                                label='Transformer Suggestions')
 
 if __name__ == '__main__':
     main()
