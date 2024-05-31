@@ -232,10 +232,15 @@ def st_searchbox(
 
     if interaction == "submit":
         st.session_state[key]["result"] = (
-            st.session_state[key]["options_py"][value]
+            st.session_state[key]["options_py"][value["value"]]
             if "options_py" in st.session_state[key]
-            else value
+            else value["value"]
         )
+        st.session_state[key]["char_difference"] = value["charDifference"]
+        if "total_difference" not in st.session_state[key]:
+            st.session_state[key]["total_difference"] = value["charDifference"]
+        else:
+            st.session_state[key]["total_difference"] += value["charDifference"]
         return st.session_state[key]["result"]
 
     if interaction == "reset":

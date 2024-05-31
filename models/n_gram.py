@@ -19,10 +19,10 @@ class NGram:
         self.trigram_prob = {}
         self.bigram_prob = {}
 
-        # Linear interpolation -> TODO: find values | EM algorithm
+        # Linear interpolation
         self.lambda_1 = 0.98
         self.lambda_2 = 0.01
-        self.lambda_3 = 0.009 - 10e-6
+        self.lambda_3 = 0.01 - 10e-6
         self.lambda_4 = 10e-6
         self.N = 3
 
