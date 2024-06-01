@@ -47,8 +47,8 @@ def main():
     if 'num_suggestions_transformer' not in st.session_state:
         st.session_state['num_suggestions_transformer'] = 5
 
-    information, n_gram_page, rnn_page, transformer_page, rnn_test_page = st.tabs(
-        ["Information", "N-Gram", "RNN-GRU", "Transformer", "RNN-TEST"]
+    information, n_gram_page, rnn_page, transformer_page = st.tabs(
+        ["Information", "N-Gram", "RNN-GRU", "Transformer"]
     )
 
     if 'letters_saved_ngram' not in st.session_state:
@@ -101,11 +101,11 @@ def main():
         st.write('Selected amount:', num_suggestions_ngram)
 
         # Use the updated session state value for search
-        selected_value_n_gram =st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
-                                            placeholder='',
-                                            key='n_gram',
-                                            edit_after_submit="autocomplete",
-                                            label='N-Gram Suggestions')
+        selected_value = st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
+                                    placeholder='',
+                                    key='n_gram',
+                                    edit_after_submit="autocomplete",
+                                    label='N-Gram Suggestions')
 
         # Update the information for saved keystrokes
         st.markdown('---')
@@ -129,15 +129,6 @@ def main():
                                       edit_after_submit="autocomplete",
                                       label='RNN Suggestions')
 
-        
-
-        # Update the information for saved keystrokes
-        st.markdown('---')
-        st.markdown('*Proportion of saved keystrokes:*')
-        char_difference = st.session_state["rnn"]["char_difference"] if "char_difference" in st.session_state["rnn"] else 0
-        total_difference = st.session_state["rnn"]["total_difference"] if "total_difference" in st.session_state["rnn"] else 0
-        st.markdown(f"- Characters saved: {char_difference}")
-        st.markdown(f"- Total characters saved: {total_difference}")
 
         # Update the information for saved keystrokes
         st.markdown('---')
@@ -155,11 +146,11 @@ def main():
         st.write('Selected amount:', num_suggestions_transformer)
 
         # Use the updated session state value for search
-        selected_value_transformer=st_searchbox(search_function=lambda term: search_transformer(term, st.session_state['num_suggestions_transformer']),
-                                                placeholder='',
-                                                key='transformer',
-                                                edit_after_submit="autocomplete",
-                                                label='Transformer Suggestions')
+        selected_value = st_searchbox(search_function=lambda term: search_transformer(term, st.session_state['num_suggestions_transformer']),
+                                    placeholder='',
+                                    key='transformer',
+                                    edit_after_submit="autocomplete",
+                                    label='Transformer Suggestions')
 
         # Update the information for saved keystrokes
         st.markdown('---')

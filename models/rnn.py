@@ -14,52 +14,6 @@ nltk.download('wordnet')
 
 from torch import nn, optim
 
-# Add the project root to the PYTHONPATH
-#sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# class RNN(nn.Module):
-#     """
-#     There are two possible ways to write this class; either it tries to predict 
-#     a whole word that consists of several tokens or it only predicts the next token
-#     after a fixed (or variable) amount of input tokens; 
-#     Another choice is whether to use a hidden state or not as an input to the forward pass
-#     Or do a encoder - decoder structure?
-
-#     I read somewhere that it is good to ... 
-#     """
-#     def __init__(self, embedding_size, hidden_size, no_of_output_symbols, device, num_layers, GRU):
-#         super().__init__()
-#         self.no_of_output_symbols = no_of_output_symbols
-#         self.embedding_size = embedding_size
-#         self.hidden_size = hidden_size
-#         self.num_layers = num_layers
-#         self.GRU = GRU
-
-#         # initialize layers
-#         self.embedding = nn.Embedding(no_of_output_symbols, embedding_size)
-#         if GRU == True:
-#             self.rnn = nn.GRU(embedding_size, hidden_size, num_layers=num_layers, batch_first=True)
-#         else:
-#             self.rnn = nn.LSTM(embedding_size, hidden_size, num_layers=num_layers, batch_first=True)
-#         self.output = nn.Linear( hidden_size, no_of_output_symbols )
-#         self.device = device
-#         self.to(device)
-
-#     def forward(self, x, hidden):
-#         """
-#         x is a list of lists of size (batch_size, max_seq_length)
-#         Each inner list contains word IDs and represents one datapoint (n words).
-       
-#         Returns:
-#         the output from the RNN: logits for the predicted next word, hidden state
-#         """
-#         x_emb = self.embedding(x) # x_emb shape: (batch_size, max_seq_length, emb_dim)
-#         output, hidden = self.rnn(x_emb, hidden) # output shape: (batch_size, max_seq_length, hidden)
-        
-#         return self.output(output[:, -1, :]), hidden # logit shape: (batch_size, 1, vocab_size)
-    
- 
-
 class RNNpredictor:
     def __init__(self, model, tokenizer, device):
         self.model = model
@@ -170,11 +124,11 @@ def initialize_rnn():
     )
     print( "Running on", device , "when initializing")
 
-    if not os.path.exists('models/lstm.model'):  # checking if there is a file with this name
+    if not os.path.exists('models/weights/lstm.model'):  # checking if there is a file with this name
         model = run()
     
     tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
-    model = torch.load('models/lstm.model', map_location=device).to(device)
+    model = torch.load('models/weights/lstm.model', map_location=device).to(device)
 
     return RNNpredictor(model, tokenizer, device)
 
