@@ -6,7 +6,7 @@ import os
 
 
 class NGram:
-    def __init__(self, ngram_model='models/weights/ngram_model_small.txt'):
+    def __init__(self):
         self.word_to_id = {}
         self.id_to_word = {}
         self.total_words = 0
@@ -27,12 +27,6 @@ class NGram:
         self.N = 3
 
         self.prob_cache = {}  # stores results for future
-
-        if os.path.exists(ngram_model):
-            self.read_model(ngram_model)
-            print(f'Model {ngram_model} loaded.')
-        else:
-            print(f"File {ngram_model} does not exist.")
 
     def read_model(self, file_path):
         """
@@ -145,9 +139,19 @@ class NGram:
         return [self.id_to_word[word_id] for prob, word_id in sorted_candidates]
 
 
+def initialize_model(model_path='models/weights/ngram_model_small.txt'):
+    model = NGram()
+    if os.path.exists(model_path):
+        model.read_model(model_path)
+        print(f'Model {model_path} loaded.')
+    else:
+        print(f"File {model_path} does not exist.")
+    return model
+
+
 if __name__ == '__main__':
     file_path = 'weights/ngram_model_small.txt'
-    trigram = NGram(ngram_model=file_path)
+    trigram = initialize_model(file_path)
     start = time.time()
     trigram.read_model(file_path)
     print(f"Reading finished in {time.time() - start} seconds")

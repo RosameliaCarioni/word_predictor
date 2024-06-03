@@ -43,11 +43,11 @@ class Transformer:
     def remove_last_word(self, input_string, cut=True):
         last_space_index = input_string.rfind(' ')
         if last_space_index == -1:
-            return None, input_string
+            return None, input_string.lower()
         else:
             if cut:
                 # if prompt is longer than seven words, cut it
-                words = input_string.split()
+                words = input_string.lower().split()
                 last_seven_words = words[-7:]
                 result = ' '.join(last_seven_words)
                 if input_string[-1] == " ":
@@ -56,7 +56,7 @@ class Transformer:
                 input_string = result
             return input_string[:last_space_index], input_string[last_space_index + 1:]
 
-    def predict_next_word(self, prompt, number_of_suggestions, max_subwords=2):
+    def predict_next_word(self, prompt, number_of_suggestions, max_subwords=3):
         self.model.eval()
 
         input_text = prompt
@@ -93,7 +93,6 @@ class Transformer:
                     masked_logits = self.mask_logits_by_subword(masked_logits, next_token_logits, filtered_subwords)
                     # Normalize the masked logits to get probabilities
                     probs = torch.softmax(masked_logits, dim=-1)
-                    # print(len(filtered_vocab)+len(filtered_subwords))
                     first_pass = probs.topk(len(filtered_vocab)+len(filtered_subwords)).indices.tolist()
                     next_token_id = first_pass[i]
                 elif len(generated_subwords) == 0:
@@ -112,9 +111,6 @@ class Transformer:
                     masked_logits = self.mask_logits_by_vocab(next_token_logits, filtered_vocab)
                     # Find most likely end
                     next_token_id = masked_logits.topk(1).indices.tolist()[0]
-
-                    # subword_text = self.tokenizer.decode([next_token_id], clean_up_tokenization_spaces=True)
-                    # print("inside subword", subword_text, subword_text.lower() in english_words)
 
                 # Decode the generated subwords so far
                 subword_text = self.tokenizer.decode([next_token_id], clean_up_tokenization_spaces=True)
@@ -152,7 +148,6 @@ class Transformer:
                                 next_token_id_input = self.tokenizer.encode(prefix + subword_text[2:], add_special_tokens=False)
                                 input_ids = torch.cat([input_ids, torch.tensor([next_token_id_input]).to(self.device)], dim=1).to(self.device)  # Append the predicted token to the input
             input_ids = input_ids_start
-        # print(i)
         return suggestions
 
     def predict_next_word2(self, prompt, number_of_suggestions, max_subwords=5):
@@ -240,7 +235,10 @@ def initialize_model(model_path='models/weights/transformer.pt'):
 
     model = TransformerModel(device, ntoken=ntoken, d_model=d_model, nhead=nhead, nlayers=nlayers,
                              d_hid=d_hid, dropout=dropout)
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    if os.path.exists(model_path):
+        model.load_state_dict(torch.load(model_path, map_location=device))
+    else:
+        print(f"Failed to load model. File {model_path} does not exist.")
     return Transformer(model, tokenizer, device)
 
 
@@ -250,8 +248,5 @@ if __name__ == '__main__':
     print(model.predict_next_word("on top of the w", 5))
     print(model.predict_next_word("my name is k", 5))
     print(model.predict_next_word("i am from germ", 5))
-    print(model.predict_next_word("thi", 5))
-    import time
-    start = time.time()
+    print(model.predict_next_word("Thi", 5))
     print(model.predict_next_word("i am a woma", 5))
-    print("--- %s seconds ---" % (time.time() - start))
