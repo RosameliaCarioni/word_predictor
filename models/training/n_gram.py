@@ -144,11 +144,11 @@ def main():
     trigram = NGram()
     files = ['/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/twitter.txt',
              '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/articles.txt',
-             '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/mobile_text.txt',
+             #'/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/mobile_text.txt',
              '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/news_summarization.txt']
     start = time.time()
     trigram.process_files(files)
-    model_path = '../weights/ngram_model.txt'
+    model_path = '../weights/ngram_model_small.txt'
     trigram.save_model(model_path)
     print(f"Training finished in {time.time() - start} seconds")
 
