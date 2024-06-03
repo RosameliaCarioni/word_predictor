@@ -9,6 +9,10 @@ The word predictor allows users to speed the typing process by providing with su
 ## Report
 ![Report with our main findings, detail implementation and experiments](link_to_report)
 
+## System Design 
+To get a better understanding of how our system is designed and works see the following diagram. If this is unclear, refer to our report for further details: 
+<img width="1156" alt="Screenshot 2024-06-01 at 16 12 15" src="https://github.com/RosameliaCarioni/word_predictor/assets/72268666/59ba1c22-84b7-4dbb-b948-11102748fd3a">
+
 ## Features
 
 ### Functionality
@@ -48,10 +52,6 @@ The project directory is organized as follows:
   - **`rnn.py`**: RNN model handler.
   - **`transformer.py`**: Transformer model handler.
  
-## System Design 
-To get a better understanding of how our files interact and how we implemented this project see the following diagram. If this is unclear, refer to our report for further details: 
-<img width="1156" alt="Screenshot 2024-06-01 at 16 12 15" src="https://github.com/RosameliaCarioni/word_predictor/assets/72268666/59ba1c22-84b7-4dbb-b948-11102748fd3a">
-
 ## Run the word predictor 
 
 1. **Clone the repository:**
