@@ -6,7 +6,7 @@ import os
 
 
 class NGram:
-    def __init__(self, ngram_model='models/weights/ngram_model.txt'):
+    def __init__(self, ngram_model='models/weights/ngram_model_small.txt'):
         self.word_to_id = {}
         self.id_to_word = {}
         self.total_words = 0
@@ -20,8 +20,8 @@ class NGram:
         self.bigram_prob = {}
 
         # Linear interpolation
-        self.lambda_1 = 0.98
-        self.lambda_2 = 0.01
+        self.lambda_1 = 0.90
+        self.lambda_2 = 0.09
         self.lambda_3 = 0.01 - 10e-6
         self.lambda_4 = 10e-6
         self.N = 3
@@ -146,7 +146,7 @@ class NGram:
 
 
 if __name__ == '__main__':
-    file_path = 'weights/ngram_model.txt'
+    file_path = 'weights/ngram_model_small.txt'
     trigram = NGram(ngram_model=file_path)
     start = time.time()
     trigram.read_model(file_path)

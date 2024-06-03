@@ -18,7 +18,7 @@ def init_models():
     if 'rnn_model' not in st.session_state:
         st.session_state.rnn_model = rnn.initialize_rnn()
     if 'transformer_model' not in st.session_state:
-        st.session_state.transformer_model = transformer.Transformer()
+        st.session_state.transformer_model = transformer.initialize_model()
 
 
 def search_ngram(search_term: str, number_of_suggestions: int) -> List[str]:
