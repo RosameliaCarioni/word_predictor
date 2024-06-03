@@ -28,9 +28,8 @@ The project uses various datasets to train the models. Below are the details of 
 
 | Name               | Type                     | Size     | Link                                                                |
 |--------------------|--------------------------|----------|---------------------------------------------------------------------|
-| **News Summaries and Content** | Text data for news | 3.85 GB  | [Kaggle - News Summarization](https://www.kaggle.com/datasets/sbhatti/news-summarization) |
+| **News Summaries** | Text data summarizing news | 264 MB | [Kaggle - News Summarization](https://www.kaggle.com/datasets/sbhatti/news-summarization) |
 | **Articles**       | Medium articles          | 3.9 MB   | [Kaggle - Medium Articles](https://www.kaggle.com/datasets/hsankesara/medium-articles) |
-| **News**           | Course assignment | 827.2 MB | Available from the course : TODO ask for reference                                      |
 | **Mobile Text**       | Corpus of mobile messages          | 932.2 MB | This dataset is used in the paper: [Mining, analyzing, and modeling text written on mobile devices](https://www.cambridge.org/core/journals/natural-language-engineering/article/mining-analyzing-and-modeling-text-written-on-mobile-devices/A60B599D7E92B5DB9CBDE243A80626C3) by K. Vertanen and P.O. Kristensoon |
 | **Twitter**        | Tweets data              | 583.1 MB | [Rpubs - Twitter Data](https://rpubs.com/NAyako/1036093)             |
 
