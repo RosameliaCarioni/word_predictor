@@ -1,7 +1,7 @@
 import torch
 import os
 import sys
-from models.training.rnn import run, RNN
+from models.training.rnn import RNN
 #from training.rnn import run, RNN
 from transformers import AutoTokenizer
 import nltk
@@ -123,18 +123,17 @@ def initialize_rnn():
     else "cpu"
     )
     print( "Running on", device , "when initializing")
-
-    if not os.path.exists('models/weights/lstm.model'):  # checking if there is a file with this name
-        model = run()
     
     tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
-    model = torch.load('models/weights/lstm.model', map_location=device).to(device)
+    try:
+        model = torch.load('models/weights/gru_no_padding.model', map_location=device).to(device)
+    except FileNotFoundError:
+            print(f"File not found: models/weights/gru_no_padding.model")
+    except Exception as e:
+            print(f"An error occurred: {e}")
+
 
     return RNNpredictor(model, tokenizer, device)
-
-    # if there is not a rnn model file with values, call train/rnn.py main function
-    # then read model 
-    # return RNN model that has a .predict_next_word() function
 
     
 if __name__ == '__main__':

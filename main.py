@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from typing import List
 from models import rnn, n_gram, transformer
-from models.training.rnn import run, RNN
+from models.training.rnn import RNN
 
 import streamlit as st
 from custom_searchbox import st_searchbox
