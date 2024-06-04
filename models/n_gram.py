@@ -138,8 +138,34 @@ class NGram:
         sorted_candidates = sorted(heap, key=lambda item: item[0], reverse=True)
         return [self.id_to_word[word_id] for prob, word_id in sorted_candidates]
 
+    def calculate_perplexity(self, dataset):
+        total_log_prob = 0
+        total_words = 0
+        unk_token = -1
 
-def initialize_model(model_path='models/weights/ngram_model_small.txt'):
+        for sentence in dataset:
+            words = sentence.strip().split()
+            word_ids = [self.word_to_id.get(word.lower(), unk_token) for word in words]
+            for i in range(len(word_ids)):
+                if i > 1:
+                    prev_word_ids = (word_ids[i - 2], word_ids[i - 1])
+                elif i > 0:
+                    prev_word_ids = (word_ids[i - 1],)
+                else:
+                    prev_word_ids = tuple([])
+                word_id = word_ids[i]
+                prob = self.interpolate_prob(word_id, prev_word_ids)
+                if prob > 0:
+                    total_log_prob += math.log(prob)
+                else:
+                    total_log_prob += float('-inf')
+                total_words += 1
+
+        perplexity = math.exp(-total_log_prob / total_words)
+        return perplexity
+
+
+def initialize_model(model_path='models/weights/ngram_model_small_final.txt'):
     model = NGram()
     if os.path.exists(model_path):
         model.read_model(model_path)

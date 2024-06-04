@@ -22,6 +22,21 @@ class NGram:
 
         self.N = 3
 
+    def process_files_split_train_test(self, files):
+        for file_path in files:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                total_lines = sum(1 for line in file)  # Count the total lines first
+                file.seek(0)  # Reset file pointer to the beginning
+                i = 0
+                max_i = int(0.85*total_lines)
+                for line in tqdm(file, total=max_i, desc=f"Processing lines in {file_path}"):
+                    if i <= max_i:
+                        self.count_n_grams(line)
+                        i += 1
+                    else:
+                        break
+        self.probability_n_gram()
+
     def process_files(self, files):
         for file_path in files:
             with open(file_path, 'r', encoding='utf-8') as file:
@@ -147,8 +162,8 @@ def main():
              #'/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/mobile_text.txt',
              '/Users/ericbanzuzi/uni/KTH/NLP/word_predictor/data/clean_data/news_summarization.txt']
     start = time.time()
-    trigram.process_files(files)
-    model_path = '../weights/ngram_model_small.txt'
+    trigram.process_files_split_train_test(files)
+    model_path = '../weights/ngram_model_small_final.txt'
     trigram.save_model(model_path)
     print(f"Training finished in {time.time() - start} seconds")
 
