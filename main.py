@@ -71,7 +71,7 @@ def main():
         with col1:
             st.image("images/eric.jpg", caption="Eric Banzuzi")
         with col2:
-            st.image("images/dog.jpg", caption="Rosamelia Carioni")
+            st.image("images/meli.jpg", caption="Rosamelia Carioni")
         with col3:
             st.image("images/kathi.jpg", caption="Katharina Deckenbach")
 
