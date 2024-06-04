@@ -8,7 +8,7 @@ The word predictor allows users to speed the typing process by providing with su
 https://github.com/RosameliaCarioni/word_predictor/assets/72268386/399578ea-f7cd-4e1b-830c-8fa5356277eb
 
 ## Report
-![Report with our main findings, detail implementation and experiments](https://github.com/user-attachments/files/15569654/NLP_word_prediction.pdf)
+[Report with our main findings, detail implementation and experiments](https://github.com/user-attachments/files/15569654/NLP_word_prediction.pdf)
 
 ## System Design 
 To get a better understanding of how our system is designed and works see the following diagram. If this is unclear, refer to our report for further details: 
