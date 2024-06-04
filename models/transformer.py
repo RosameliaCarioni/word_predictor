@@ -73,7 +73,6 @@ class Transformer:
         input_ids_start = torch.tensor(tokens).unsqueeze(0).to(self.device)  # Add batch dimension
         input_ids = input_ids_start
 
-
         first_pass = []
         suggestions = []
         i = 0
@@ -96,7 +95,10 @@ class Transformer:
                     first_pass = probs.topk(len(filtered_vocab)+len(filtered_subwords)).indices.tolist()
                     next_token_id = first_pass[i]
                 elif len(generated_subwords) == 0:
-                    next_token_id = first_pass[i]
+                    try:
+                        next_token_id = first_pass[i]
+                    except IndexError:
+                        return suggestions
                 else:
                     # filter by prefix
                     filtered_vocab, _ = self.filter_vocab_by_prefix(vocab, generated_subwords[-1])
@@ -114,7 +116,7 @@ class Transformer:
 
                 # Decode the generated subwords so far
                 subword_text = self.tokenizer.decode([next_token_id], clean_up_tokenization_spaces=True)
-                # print("subword", subword_text, subword_text.lower() in english_words)
+                #print("subword", subword_text, subword_text.lower() in english_words)
 
                 # Check if the last token can complete a word
                 if not subword_text.startswith('[unused') and subword_text != self.tokenizer.pad_token:
@@ -147,6 +149,7 @@ class Transformer:
                                 generated_subwords.append(prefix + subword_text[2:])
                                 next_token_id_input = self.tokenizer.encode(prefix + subword_text[2:], add_special_tokens=False)
                                 input_ids = torch.cat([input_ids, torch.tensor([next_token_id_input]).to(self.device)], dim=1).to(self.device)  # Append the predicted token to the input
+            #print('suggestions: ', suggestions)
             input_ids = input_ids_start
         return suggestions
 
@@ -214,7 +217,7 @@ class Transformer:
         return next_words
 
 
-def initialize_model(model_path='models/weights/transformer.pt'):
+def initialize_model(model_path='models/weights/transformer_artificial_padding.pt'):
     device = (
         "cuda"
         if torch.cuda.is_available()
@@ -223,6 +226,7 @@ def initialize_model(model_path='models/weights/transformer.pt'):
         else "cpu"
     )
     print("Running on", device, "when initializing")
+    print("Model", model_path, 'loaded.')
 
     tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
     ntoken = tokenizer.vocab_size  # Vocabulary size - BERT
@@ -243,7 +247,7 @@ def initialize_model(model_path='models/weights/transformer.pt'):
 
 
 if __name__ == '__main__':
-    model = initialize_model('weights/transformer.pt')
+    model = initialize_model('models/weights/transformer_artificial_padding.pt')
     print('Starting')
     print(model.predict_next_word("on top of the w", 5))
     print(model.predict_next_word("my name is k", 5))

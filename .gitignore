@@ -30,3 +30,5 @@ yarn-error.log*
 
 # data
 /data/*
+
+__pycache__*
