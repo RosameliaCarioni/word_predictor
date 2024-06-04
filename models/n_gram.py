@@ -118,7 +118,7 @@ class NGram:
         for word_id in self.word_to_id.values():
             if filter_words:
                 word = self.id_to_word[word_id]
-                if not word.startswith(current_word):
+                if not word.startswith(current_word) or word == current_word:
                     continue
 
             prob = self.interpolate_prob(word_id, tuple(prev_word_ids))
@@ -153,8 +153,40 @@ class NGram:
                     total_log_prob += float('-inf')
                 total_words += 1
 
-        perplexity = math.exp(-total_log_prob / total_words)
-        return perplexity
+        ppl = 2 ** (-total_log_prob / total_words)
+        return ppl
+
+
+    def calculate_word_level_accuracy(self, dataset):
+        correct = 0
+        total_words = 0
+        unk_token = -1
+
+        for sentence in dataset:
+            words = sentence.strip().split()
+            word_ids = [self.word_to_id.get(word.lower(), unk_token) for word in words]
+            for i in range(len(word_ids)):
+                if i > 1:
+                    prev_words = (words[i - 2], words[i - 1])
+                elif i > 0:
+                    prev_words = (words[i - 1],)
+                else:
+                    prev_words = tuple([])
+
+                prompt = ''
+                for prev_word in prev_words:
+                    prompt += prev_word + ' '
+
+                prompt = prompt.rstrip()
+                predictions = self.predict_next_word(prompt, 1)
+
+                if len(predictions) > 0 and predictions[0] == words[i]:
+                    correct += 1
+
+                total_words += 1
+
+        accuracy = correct / total_words
+        return accuracy
 
 
 def initialize_model(model_path='models/weights/ngram_model_small_final.txt'):
@@ -168,12 +200,28 @@ def initialize_model(model_path='models/weights/ngram_model_small_final.txt'):
 
 
 if __name__ == '__main__':
-    file_path = 'weights/ngram_model_small.txt'
+    file_path = 'weights/ngram_model_small_final.txt'
     trigram = initialize_model(file_path)
     start = time.time()
     trigram.read_model(file_path)
     print(f"Reading finished in {time.time() - start} seconds")
     print('Vocabulary size:', trigram.unique_words)
     start = time.time()
+    print("Predict for \"what is\":")
     print(trigram.predict_next_word("what is", 5))
     print(f"Prediction finished in {time.time() - start} seconds")
+
+    dataset_path = 'training/ngram_test_set.txt'
+    with open(dataset_path, 'r') as f:
+        dataset = f.readlines()
+
+    start = time.time()
+    perplexity = trigram.calculate_perplexity(dataset)
+    print(f"Perplexity: {perplexity}")
+    print(f"Perplexity calculation finished in {time.time() - start} seconds")
+
+    start = time.time()
+    perplexity = trigram.calculate_word_level_accuracy(dataset)
+    print(f"Perplexity: {perplexity}")
+    print(f"Perplexity calculation finished in {time.time() - start} seconds")
+

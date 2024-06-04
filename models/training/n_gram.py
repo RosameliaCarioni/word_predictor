@@ -46,6 +46,20 @@ class NGram:
                     self.count_n_grams(line)
         self.probability_n_gram()
 
+    def make_testset(self, files):
+        test_file_path = 'ngram_test_set.txt'
+        for file_path in files:
+            with open(file_path, 'r', encoding='utf-8') as file:
+                total_lines = sum(1 for line in file)  # Count the total lines first
+                i = 0
+                max_i = int(0.85*total_lines)
+                file.seek(0)  # Reset file pointer to the beginning
+                for line in tqdm(file, total=total_lines, desc=f"Processing lines in {file_path}"):
+                    if i > max_i:
+                        with open(test_file_path, 'a') as test_file:
+                            test_file.write(line)
+                    i += 1
+
     def count_unigrams(self, line):
         words = line.strip().split()
         for word in words:
@@ -166,6 +180,9 @@ def main():
     model_path = '../weights/ngram_model_small_final.txt'
     trigram.save_model(model_path)
     print(f"Training finished in {time.time() - start} seconds")
+    # print('\nCreating test set...')
+    # trigram.make_testset(files)
+    # print('DONE!')
 
 
 if __name__ == '__main__':
