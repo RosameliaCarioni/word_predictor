@@ -14,7 +14,7 @@ st.set_page_config(layout="centered", page_icon=':iphone:', page_title="Word Aut
 
 def init_models():
     if 'n_gram_model' not in st.session_state:
-        st.session_state.n_gram_model = n_gram.NGram()
+        st.session_state.n_gram_model = n_gram.initialize_model()
     if 'rnn_model' not in st.session_state:
         st.session_state.rnn_model = rnn.initialize_rnn()
     if 'transformer_model' not in st.session_state:
@@ -69,7 +69,7 @@ def main():
         st.header("Group Members")
         col1, col2, col3 = st.columns([2, 2, 2])
         with col1:
-            st.image("images/dog.jpg", caption="Eric Banzuzi")
+            st.image("images/eric.jpg", caption="Eric Banzuzi")
         with col2:
             st.image("images/dog.jpg", caption="Rosamelia Carioni")
         with col3:
@@ -91,7 +91,7 @@ def main():
         st.write("The Recurrent Neural Network (RNN) with Gated Recurrent Units (GRU) is a type of neural network that excels in learning from sequences of data. In text prediction, it can capture long-range dependencies and context from text. Generally, RNNs are well suited for sequential data like texts because they make use of a hidden state that is updated after every step when processing the sequence. If the sequence consists of n words the last hidden state will contain information of all words. However, the vanilla RNN cell does not perform too well if the sequence is very long. This is because training them via Backpropagation Through Time leads to problems with vanishing and exploding gradients.  \n\n In order to deal with those problems, more sophisticated RNN-cell architectures have been developed. **LSTMs** (Long Short-Term Memory) were the state-of-the-art for a long time as they were able to learn long-term dependencies through an elaborate design that involves **input, output and forget gates** to have a better control over how the hidden states becomes updated. Another important type of gated cell architectures are **GRUs** (Gated Recurrent Network) that combine the input and forget gates of the LSTM into a single **update gate**. Additionally, they have a **reset gate** that determines how much of the previous hidden state should be forgotten. Compared to LSTMs, they are require less parameters and are more efficient at training but this comes with the trade-off of performing slightly worse than LSTMs when the sequences are very long.  \n\n In this project, we implemented a GRU that predicts the next word, given the user's current input. The datapoints for the training consisted of vectors that contained the indicies of n words with the label being the subsequent word. In this way, the GRU learns to predict which word is most likely the next one. ")
 
         st.subheader("Transformer Model")
-        st.write("The Transformer model, based on self-attention mechanisms, represents a breakthrough in sequence modeling. It allows for parallel processing of sequences and has been the basis for models like BERT and GPT.")
+        st.write("The transformer architecture is the backbone of Large Language Models like GPT-4, Gemini, BERT etc. The Google paper \"Attention is all you need\" introduced self-attention and made the training more parallelizable. Using key, query and value vectors, a transformer block transforms input vectors (usually with a positional encoding) into output vectors, thus learning a contextualized vector representation. Fine-tuning pre-trained language models like BERT has shown to be a good approach to solve a lot of language engineering problems. In this project, we implemented only the encoder part of a transformer.")
 
     with n_gram_page:
         # Define the slider and update the session state
