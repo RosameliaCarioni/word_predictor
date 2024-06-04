@@ -10,6 +10,9 @@ from nltk.corpus import words
 # Download the list of words if not already done
 #nltk.download('words')
 nltk.download('wordnet')
+import inflect
+
+p = inflect.engine()
 
 
 from torch import nn, optim
