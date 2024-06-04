@@ -5,7 +5,9 @@ from transformers import AutoTokenizer
 from models.training.transformer import TransformerModel
 import nltk
 from nltk.corpus import words
+import inflect
 
+p = inflect.engine()
 nltk.download('words')
 #nltk.download('wordnet')
 
@@ -97,7 +99,7 @@ class Transformer:
                 elif len(generated_subwords) == 0:
                     try:
                         next_token_id = first_pass[i]
-                    except IndexError:
+                    except IndexError:  # all possible suggestions seen?
                         return suggestions
                 else:
                     # filter by prefix
@@ -116,14 +118,14 @@ class Transformer:
 
                 # Decode the generated subwords so far
                 subword_text = self.tokenizer.decode([next_token_id], clean_up_tokenization_spaces=True)
-                #print("subword", subword_text, subword_text.lower() in english_words)
+                # print("subword", subword_text, subword_text.lower() in english_words)
 
                 # Check if the last token can complete a word
                 if not subword_text.startswith('[unused') and subword_text != self.tokenizer.pad_token:
                     if subword == 0:
                         i += 1
                     # is the word complete?
-                    if subword_text.lower() in english_words and len(generated_subwords) == 0:
+                    if (subword_text.lower() in english_words or p.singular_noun(subword_text.lower()) in english_words) and len(generated_subwords) == 0:
                         suggestions.append(subword_text)
                         break
                     # Check if it's not a continuation of a word
@@ -131,7 +133,7 @@ class Transformer:
                         break
                     if subword_text.startswith("##"):
                         # is the word complete?
-                        if len(generated_subwords) == 0 and prefix + subword_text[2:] in english_words:
+                        if len(generated_subwords) == 0 and (prefix + subword_text[2:] in english_words or p.singular_noun(prefix + subword_text[2:]) in english_words):
                             if prefix + subword_text[2:] not in suggestions:
                                 suggestions.append(prefix + subword_text[2:])
                             break
@@ -149,72 +151,8 @@ class Transformer:
                                 generated_subwords.append(prefix + subword_text[2:])
                                 next_token_id_input = self.tokenizer.encode(prefix + subword_text[2:], add_special_tokens=False)
                                 input_ids = torch.cat([input_ids, torch.tensor([next_token_id_input]).to(self.device)], dim=1).to(self.device)  # Append the predicted token to the input
-            #print('suggestions: ', suggestions)
             input_ids = input_ids_start
         return suggestions
-
-    def predict_next_word2(self, prompt, number_of_suggestions, max_subwords=5):
-        self.model.eval()
-
-        input_text = prompt
-        vocab = self.tokenizer.get_vocab()
-        english_words = set(words.words())
-        unused_tokens = [token for token in self.tokenizer.vocab if token.startswith('[unused')]
-
-        # remove last word from prompt (word that is supposed to be predicted)
-        prompt, prefix = self.remove_last_word(prompt, True)
-        full_prompt, _ = self.remove_last_word(input_text, False)
-        if prompt == None:
-            tokens = [self.tokenizer.cls_token_id]
-        else:
-            tokens = self.tokenizer.encode(prompt, add_special_tokens=False)
-        input_ids = torch.tensor(tokens).unsqueeze(0).to(self.device)  # Add batch dimension
-
-        next_words = []
-        first_pass = []
-
-        for i in range(number_of_suggestions):
-            generated_subwords = []
-            for _ in range(max_subwords):
-                with torch.no_grad():
-                    outputs = self.model(input_ids)
-                    next_token_logits = outputs.squeeze()  # Get the logits for the last token
-
-                if len(generated_subwords) == 0:
-                    # filter by prefix
-                    filtered_vocab, _ = self.filter_vocab_by_prefix(vocab, prefix)
-                    # Mask the logits based on the filtered vocabulary
-                    masked_logits = self.mask_logits_by_vocab(next_token_logits, filtered_vocab)
-                    # Normalize the masked logits to get probabilities
-                    probs = torch.softmax(masked_logits, dim=-1)
-                    if i == 0:
-                        first_pass = probs.topk(number_of_suggestions).indices.tolist()
-                    next_token_id = first_pass[i]
-                else:
-                    next_token_id = next_token_logits.topk(number_of_suggestions).indices.tolist()[i]
-
-                # Decode the generated subwords so far
-                subword_text = self.tokenizer.decode([next_token_id], clean_up_tokenization_spaces=True)
-                # print("subword", subword_text, subword_text.lower() in english_words)
-                # Check if the last token completes a word
-                if (not subword_text.startswith("##") and len(generated_subwords) > 0):  # Check if it's not a continuation of a word
-                    break
-                if (subword_text.lower() in english_words and len(generated_subwords) == 0):
-                    generated_subwords.append(next_token_id)
-                    break
-                if subword_text == self.tokenizer.pad_token or subword_text in unused_tokens:
-                    break
-                if subword_text.startswith("##") and len(generated_subwords) == 0:
-                    break
-
-                generated_subwords.append(next_token_id)
-                input_ids = torch.cat([input_ids, torch.tensor([[next_token_id]]).to(self.device)], dim=1).to(self.device)  # Append the predicted token to the input
-
-            # Decode the generated subwords to form the next word
-            # print(generated_subwords)
-            next_word = self.tokenizer.decode(generated_subwords, clean_up_tokenization_spaces=True).strip()
-            next_words.append(next_word)
-        return next_words
 
 
 def initialize_model(model_path='models/weights/transformer_artificial_padding.pt'):
@@ -226,7 +164,6 @@ def initialize_model(model_path='models/weights/transformer_artificial_padding.p
         else "cpu"
     )
     print("Running on", device, "when initializing")
-    print("Model", model_path, 'loaded.')
 
     tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
     ntoken = tokenizer.vocab_size  # Vocabulary size - BERT
@@ -241,6 +178,7 @@ def initialize_model(model_path='models/weights/transformer_artificial_padding.p
                              d_hid=d_hid, dropout=dropout)
     if os.path.exists(model_path):
         model.load_state_dict(torch.load(model_path, map_location=device))
+        print("Model", model_path, 'loaded.')
     else:
         print(f"Failed to load model. File {model_path} does not exist.")
     return Transformer(model, tokenizer, device)
