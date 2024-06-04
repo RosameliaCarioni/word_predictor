@@ -73,7 +73,7 @@ def main():
         with col2:
             st.image("images/dog.jpg", caption="Rosamelia Carioni")
         with col3:
-            st.image("images/dog.jpg", caption="Katharina Deckenbach")
+            st.image("images/kathi.jpg", caption="Katharina Deckenbach")
 
         st.header("Project Goals :sparkles:")
         st.write("""
