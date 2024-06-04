@@ -3,13 +3,12 @@ import os
 import sys
 from transformers import AutoTokenizer
 from models.training.transformer import TransformerModel
-import nltk
-from nltk.corpus import words
-import inflect
 
-p = inflect.engine()
-nltk.download('words')
-#nltk.download('wordnet')
+
+def load_dictionary_words():
+    with open('models/dictionary/words.txt') as word_file:
+        valid_words = set(word_file.read().lower().split())
+    return valid_words
 
 
 class Transformer:
@@ -17,6 +16,7 @@ class Transformer:
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
+        self.english_words = load_dictionary_words()
 
     def filter_vocab_by_prefix(self, vocab, prefix):
         if prefix == None:
@@ -63,7 +63,7 @@ class Transformer:
 
         input_text = prompt
         vocab = self.tokenizer.get_vocab()
-        english_words = set(words.words())
+        english_words = self.english_words
 
         # remove last word from prompt (word that is supposed to be predicted)
         prompt, prefix = self.remove_last_word(prompt, True)
@@ -125,15 +125,16 @@ class Transformer:
                     if subword == 0:
                         i += 1
                     # is the word complete?
-                    if (subword_text.lower() in english_words or p.singular_noun(subword_text.lower()) in english_words) and len(generated_subwords) == 0:
-                        suggestions.append(subword_text)
+                    if (subword_text.lower() in english_words) and len(generated_subwords) == 0:
+                        if subword_text.lower() not in suggestions:
+                            suggestions.append(subword_text)
                         break
                     # Check if it's not a continuation of a word
                     if not subword_text.startswith("##") and len(generated_subwords) > 0:
                         break
                     if subword_text.startswith("##"):
                         # is the word complete?
-                        if len(generated_subwords) == 0 and (prefix + subword_text[2:] in english_words or p.singular_noun(prefix + subword_text[2:]) in english_words):
+                        if len(generated_subwords) == 0 and (prefix + subword_text[2:] in english_words):
                             if prefix + subword_text[2:] not in suggestions:
                                 suggestions.append(prefix + subword_text[2:])
                             break
