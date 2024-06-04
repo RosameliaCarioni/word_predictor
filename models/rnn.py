@@ -105,7 +105,10 @@ class RNNpredictor:
                     first_pass = probs.topk(len(filtered_vocab)+len(filtered_subwords)).indices.tolist()
                     next_token_id = first_pass[i]
                 elif len(generated_subwords) == 0:
-                    next_token_id = first_pass[i]
+                    try:
+                        next_token_id = first_pass[i]
+                    except IndexError:
+                        return suggestions
                 else:
                     # filter by prefix
                     filtered_vocab, _ = self.filter_vocab_by_prefix(vocab, generated_subwords[-1])
