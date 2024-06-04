@@ -4,7 +4,7 @@
 The word predictor allows users to speed the typing process by providing with suggestions to autocomplete what they are writting. The system is designed to predict the next word as you type, enhancing typing efficiency in text messages, emails, and other text inputs. This project includes various models such as N-gram, RNN, and Transformer to provide accurate word predictions.
 
 ## Demo
-![Word Predictor Demo](make_it_a_gif)
+![Word Predictor Demo](https://github.com/RosameliaCarioni/word_predictor/assets/72268666/b2b5eaf1-af1a-4504-81e1-37e56718dd11)
 
 ## Report
 ![Report with our main findings, detail implementation and experiments](link_to_report)
