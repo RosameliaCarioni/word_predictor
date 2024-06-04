@@ -2,17 +2,13 @@ import torch
 import os
 import sys
 from models.training.rnn import RNN
-#from training.rnn import run, RNN
 from transformers import AutoTokenizer
-import nltk
-from nltk.corpus import words
 
-# Download the list of words if not already done
-#nltk.download('words')
-nltk.download('wordnet')
-import inflect
 
-p = inflect.engine()
+def load_dictionary_words():
+    with open('models/dictionary/words.txt') as word_file:
+        valid_words = set(word_file.read().lower().split())
+    return valid_words
 
 
 from torch import nn, optim
@@ -25,6 +21,7 @@ class RNNpredictor:
         self.model = model
         self.tokenizer = tokenizer
         self.device = device
+        self.english_words = load_dictionary_words()
 
     def filter_vocab_by_prefix(self, vocab, prefix):
         if prefix == None:
@@ -70,10 +67,10 @@ class RNNpredictor:
         self.model.eval()
 
         input_text = prompt
-        hidden = None
         vocab = self.tokenizer.get_vocab()
-        #nltk.download('words')
-        english_words = set(words.words())
+        english_words = self.english_words
+
+        hidden = None
 
         # remove last word from prompt (word that is supposed to be predicted)
         prompt, prefix = self.remove_last_word(prompt, True)
@@ -84,7 +81,6 @@ class RNNpredictor:
             tokens = self.tokenizer.encode(prompt, add_special_tokens=False)
         input_ids_start = torch.tensor(tokens).unsqueeze(0).to(self.device)  # Add batch dimension
         input_ids = input_ids_start
-
 
         first_pass = []
         suggestions = []
@@ -110,7 +106,7 @@ class RNNpredictor:
                 elif len(generated_subwords) == 0:
                     try:
                         next_token_id = first_pass[i]
-                    except IndexError:
+                    except IndexError:  # all possible suggestions seen?
                         return suggestions
                 else:
                     # filter by prefix
@@ -136,15 +132,16 @@ class RNNpredictor:
                     if subword == 0:
                         i += 1
                     # is the word complete?
-                    if subword_text.lower() in english_words and len(generated_subwords) == 0:
-                        suggestions.append(subword_text)
+                    if (subword_text.lower() in english_words) and len(generated_subwords) == 0:
+                        if subword_text.lower() not in suggestions:
+                            suggestions.append(subword_text)
                         break
                     # Check if it's not a continuation of a word
                     if not subword_text.startswith("##") and len(generated_subwords) > 0:
                         break
                     if subword_text.startswith("##"):
                         # is the word complete?
-                        if len(generated_subwords) == 0 and prefix + subword_text[2:] in english_words:
+                        if len(generated_subwords) == 0 and (prefix + subword_text[2:] in english_words):
                             if prefix + subword_text[2:] not in suggestions:
                                 suggestions.append(prefix + subword_text[2:])
                             break
@@ -164,6 +161,7 @@ class RNNpredictor:
                                 input_ids = torch.cat([input_ids, torch.tensor([next_token_id_input]).to(self.device)], dim=1).to(self.device)  # Append the predicted token to the input
             input_ids = input_ids_start
         return suggestions
+
     
     
 def initialize_rnn():
