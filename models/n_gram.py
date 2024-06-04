@@ -26,8 +26,6 @@ class NGram:
         self.lambda_4 = 10e-6
         self.N = 3
 
-        self.prob_cache = {}  # stores results for future
-
     def read_model(self, file_path):
         """
         Reads the contents of the language model file into the appropriate data structures.
@@ -90,11 +88,6 @@ class NGram:
             return 0
 
     def interpolate_prob(self, word_id, prev_word_ids):
-        cache_key = (word_id, prev_word_ids)
-        # check if the probability was already computed before
-        if cache_key in self.prob_cache:
-            return self.prob_cache[cache_key]
-
         unigram_prob = self.get_unigram_prob(word_id)
         bigram_prob = self.get_bigram_prob(word_id, prev_word_ids[-1]) if len(prev_word_ids) > 0 else 0
         trigram_prob = self.get_trigram_prob(word_id, prev_word_ids)
@@ -104,7 +97,6 @@ class NGram:
                 self.lambda_3 * unigram_prob +
                 self.lambda_4)
 
-        self.prob_cache[cache_key] = prob
         return prob
 
     def predict_next_word(self, context, number_of_suggestions=5):
