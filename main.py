@@ -102,10 +102,10 @@ def main():
 
         # Use the updated session state value for search
         selected_value = st_searchbox(search_function=lambda term: search_ngram(term, st.session_state['num_suggestions_ngram']),
-                                    placeholder='',
-                                    key='n_gram',
-                                    edit_after_submit="autocomplete",
-                                    label='N-Gram Suggestions')
+                                      placeholder='',
+                                      key='n_gram',
+                                      edit_after_submit="autocomplete",
+                                      label='N-Gram Suggestions')
 
         # Update the information for saved keystrokes
         st.markdown('---')
@@ -147,10 +147,10 @@ def main():
 
         # Use the updated session state value for search
         selected_value = st_searchbox(search_function=lambda term: search_transformer(term, st.session_state['num_suggestions_transformer']),
-                                    placeholder='',
-                                    key='transformer',
-                                    edit_after_submit="autocomplete",
-                                    label='Transformer Suggestions')
+                                      placeholder='',
+                                      key='transformer',
+                                      edit_after_submit="autocomplete",
+                                      label='Transformer Suggestions')
 
         # Update the information for saved keystrokes
         st.markdown('---')

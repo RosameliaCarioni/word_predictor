@@ -1,5 +1,6 @@
-
 from torch import nn, optim
+
+
 class RNN(nn.Module):
     """
     Recurrent Neural Network (RNN) with optional GRU or LSTM units.
